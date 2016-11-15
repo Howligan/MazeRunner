@@ -3,40 +3,52 @@ using System.Collections;
 
 public class Maze : MonoBehaviour
 {
-    public int sizeX, sizeZ;
-    public MazeCell cellPrefab;
-    private MazeCell[,] cells;
+    public GameObject Wall;
+    public int xSize = 5;
+    public int ySize = 5;
+    public float wallLength = 1f;
+    private Vector3 initalPos;
+    private GameObject wallHolder;
 
-    // Use this for initialization
     void Start()
     {
-
+        CreateWalls();
     }
 
-    // Update is called once per frame
-    void Update()
+    void CreateWalls()
     {
+        wallHolder = new GameObject();
+        wallHolder.name = "Maze";
 
-    }
+        initalPos = new Vector3((-xSize / 2) + wallLength / 2, 0, (-ySize / 2) + wallLength / 2);
+        Vector3 myPos = initalPos;
+        GameObject tempWall;
 
-    public void Generate()
-    {
-        cells = new MazeCell[sizeX, sizeZ];
-        for (int x = 0; x < sizeX; x++)
+        //for x axis
+        for(int i = 0; i < ySize; i++)
         {
-            for (int z = 0; z < sizeZ; z++)
+            for (int j = 0; j <= xSize; j++)
             {
-                CreateCell(x, z);
+                myPos = new Vector3(initalPos.x + (j * wallLength) - wallLength / 2, 0, initalPos.z + (i * wallLength) - wallLength/2);
+                tempWall = Instantiate(Wall,myPos,Quaternion.identity) as GameObject;
+                tempWall.transform.parent = wallHolder.transform;
+            }
+        }
+
+        //for y axis
+        for (int i = 0; i <= ySize; i++)
+        {
+            for (int j = 0; j < xSize; j++)
+            {
+                myPos = new Vector3(initalPos.x + (j * wallLength), 0, initalPos.z + (i * wallLength) - wallLength);
+                tempWall = Instantiate(Wall, myPos, Quaternion.Euler(0,90,0)) as GameObject;
+                tempWall.transform.parent = wallHolder.transform;
             }
         }
     }
 
-    void CreateCell (int x, int z)
+    void Update()
     {
-        MazeCell newCell = Instantiate(cellPrefab) as MazeCell;
-        cells[x, z] = newCell;
-        newCell.name = "Maze Cell" + x + ", " + z;
-        newCell.transform.parent = transform;
-        newCell.transform.localPosition = new Vector3(x - sizeX * 0.5f + 0.5f, 0f, z - sizeZ * 0.5f + 0.5f);
+
     }
 }
